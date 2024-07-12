@@ -51,8 +51,6 @@ if __name__ == "__main__":
 
         current_time = time.time()
 
-        print(i)
-
         if i % 10 == 0:
             # Print a summary of balances
             print(f"\nSummary of Balances for {i} transactions:")
