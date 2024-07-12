@@ -1,6 +1,6 @@
 import requests
 import json
-from time import sleep
+import time
 
 # Solana RPC endpoint
 SOLANA_RPC_URL = "https://api.mainnet-beta.solana.com"
@@ -49,26 +49,26 @@ if __name__ == "__main__":
 
     for i in range(len(signatures)):
 
+        current_time = time.time()
+
         if i % 10 == 0:
             # Print a summary of balances
             print(f"\nSummary of Balances for {i} transactions:")
             for owner, bal in balance.items():
                 print(f"Owner: {owner}, Balance: {bal:.6f}")
 
-        sleep(2)
         transaction = get_transaction_details(signatures[i])
         if transaction:
             update_balance(transaction, balance)
             # Log the transaction details
             pre_balances = transaction['meta']['preTokenBalances']
             post_balances = transaction['meta']['postTokenBalances']
-            
-            for pre, post in zip(pre_balances, post_balances):
-                if pre['owner'] == ADDRESS or post['owner'] == ADDRESS:
-                    pre_amount = pre['uiTokenAmount']['uiAmount'] if pre['uiTokenAmount']['uiAmount'] else 0
-                    change = float(post['uiTokenAmount']['uiAmount']) - pre_amount
-                    involved_addresses = [pre['owner'], post['owner']]
 
+        end_time = time.time()
+        # if we are fetching too fast, sleep for a bit
+        if end_time - current_time < 2:
+            time.sleep(2 - (end_time - current_time))
+    
     # Print a summary of balances
     print("\nSummary of Balances:")
     for owner, bal in balance.items():
