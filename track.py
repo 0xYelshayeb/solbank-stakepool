@@ -24,9 +24,16 @@ def get_transaction_details(signature):
         ]
     })
 
-    response = requests.post(SOLANA_RPC_URL, headers=headers, data=payload)
-    response.raise_for_status()
-    return response.json().get('result')
+    try:
+        response = requests.post(SOLANA_RPC_URL, headers=headers, data=payload)
+        response.raise_for_status()
+        return response.json().get('result')
+    except requests.exceptions.HTTPError as e:
+        time.sleep(10)
+        print("Rate limited, retrying...")
+        response = requests.post(SOLANA_RPC_URL, headers=headers, data=payload)
+        response.raise_for_status()
+        return response.json().get('result')
 
 # Extract amounts from transaction details and update balance
 def update_balance(transaction, balance):
