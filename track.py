@@ -9,49 +9,6 @@ SOLANA_RPC_URL = "https://api.mainnet-beta.solana.com"
 ENTRY_POINT = "cmUT9D8w3FQ9SxZHM8Kwrfjyi1Cy9BGR9ndnp2ZsuV7"
 ADDRESS = "3Q3pE1izgCeAtTR23eufZy5vCEGtpWLBQcGD2HGd1cbU"
 
-# Helper function to get transaction signatures for an address with pagination
-def get_transaction_signatures(address, limit=1000):
-    headers = {
-        "Content-Type": "application/json"
-    }
-    all_signatures = []
-    last_signature = None
-
-    while True:
-        params = {
-            "limit": limit
-        }
-        if last_signature:
-            params["before"] = last_signature
-
-        payload = json.dumps({
-            "jsonrpc": "2.0",
-            "id": 1,
-            "method": "getConfirmedSignaturesForAddress2",
-            "params": [
-                address,
-                params
-            ]
-        })
-
-        response = requests.post(SOLANA_RPC_URL, headers=headers, data=payload)
-        response.raise_for_status()
-        result = response.json().get('result', [])
-
-        if not result:
-            break
-
-        signatures = [sig['signature'] for sig in result]
-        all_signatures.extend(signatures)
-        last_signature = result[-1]['signature']
-
-        # Break if we have fetched less than the limit (no more transactions)
-        if len(result) < limit:
-            break
-        print(all_signatures)
-
-    return all_signatures
-
 # Helper function to get transaction details for a signature
 def get_transaction_details(signature):
     headers = {
@@ -86,8 +43,9 @@ def update_balance(transaction, balance):
 
 if __name__ == "__main__":
     balance = {}
-    signatures = get_transaction_signatures(ENTRY_POINT)
-    print(f"Found {len(signatures)} transactions for {ENTRY_POINT}")
+    # read signatures from signatures.txt
+    with open("signatures.txt", "r") as f:
+        signatures = f.read().splitlines()
 
     for i in range(len(signatures)):
 
@@ -110,9 +68,6 @@ if __name__ == "__main__":
                     pre_amount = pre['uiTokenAmount']['uiAmount'] if pre['uiTokenAmount']['uiAmount'] else 0
                     change = float(post['uiTokenAmount']['uiAmount']) - pre_amount
                     involved_addresses = [pre['owner'], post['owner']]
-                    print(f"Transaction Signature: {signatures[i]}")
-                    print(f"Balance Change: {change:.6f}")
-                    print("-" * 40)
 
     # Print a summary of balances
     print("\nSummary of Balances:")
