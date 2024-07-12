@@ -45,7 +45,7 @@ if __name__ == "__main__":
     balance = {}
     # read signatures from signatures.txt
     with open("signatures.txt", "r") as f:
-        signatures = f.read().splitlines()
+        signatures = f.read().splitlines()[::-1]
 
     for i in range(len(signatures)):
 
