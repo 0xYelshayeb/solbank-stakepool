@@ -38,7 +38,7 @@ def update_balance(transaction, balance):
             continue
         pre_amount = pre['uiTokenAmount']['uiAmount'] if pre['uiTokenAmount']['uiAmount'] else 0
         post_amount = post['uiTokenAmount']['uiAmount'] if post['uiTokenAmount']['uiAmount'] else 0
-        change = pre_amount - post_amount
+        change = post_amount - pre_amount
         balance[pre['owner']] = balance.get(pre['owner'], 0) - change
 
 if __name__ == "__main__":
