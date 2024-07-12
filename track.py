@@ -42,6 +42,7 @@ def update_balance(transaction, balance):
         balance[pre['owner']] = balance.get(pre['owner'], 0) - change
 
 if __name__ == "__main__":
+    print("Starting to track transactions...")
     balance = {}
     # read signatures from signatures.txt
     with open("signatures.txt", "r") as f:
